@@ -202,6 +202,9 @@ namespace {
     [sampleAppRenderer renderFrameVuforia];
 }
 
+
+
+
 - (void) renderFrameWithState:(const Vuforia::State&) state projectMatrix:(Vuforia::Matrix44F&) projectionMatrix {
     [self setFramebuffer];
     
@@ -226,7 +229,7 @@ namespace {
     else
         glFrontFace(GL_CCW);   //Back camera
     //glFrontFace(GL_CW);
- /*   for (int i = 0; i < state.getNumTrackableResults(); ++i) {
+    for (int i = 0; i < state.getNumTrackableResults(); ++i) {
         // Get the trackable
         const Vuforia::TrackableResult* result = state.getTrackableResult(i);
         const Vuforia::Trackable& trackable = result->getTrackable();
@@ -234,6 +237,8 @@ namespace {
         //const Vuforia::Trackable& trackable = result->getTrackable();
         Vuforia::Matrix44F modelViewMatrix = Vuforia::Tool::convertPose2GLMatrix(result->getPose());
         
+        
+        modelViewMatrix.data[12] = 0;modelViewMatrix.data[13] = 0;modelViewMatrix.data[14] = 250;modelViewMatrix.data[15] = 1;
         // OpenGL 2
         Vuforia::Matrix44F modelViewProjection;
         
@@ -292,37 +297,31 @@ namespace {
         
         SampleApplicationUtils::checkGlError("EAGLView renderFrameVuforia");
     }
-    */
+    
 
     // OpenGL 2
-    NSLog(@"rendering");
+/*    NSLog(@"rendering");
     Vuforia::Matrix44F modelViewProjection;
   //  Vuforia::Matrix44F projectionMatrix;
     Vuforia::Matrix44F modelViewMatrix;
+    Vuforia::Matrix44F modelMatrix;
+    Vuforia::Matrix44F ViewMatrix;
+  
+    SampleApplicationUtils::setRotationMatrix(0, 1, 0, 0,&modelMatrix.data[0]);
+    SampleApplicationUtils::setRotationMatrix(0, 1, 0, 0,&ViewMatrix.data[0]);
     
-    Vuforia::Vec2F size = Vuforia::Vec2F(300,300);// = cameraCalibration.getSize();
-    Vuforia::Vec2F focalLength = Vuforia::Vec2F(300,300);;// = cameraCalibration.getFocalLength();
-    Vuforia::Vec2F principalPoint = Vuforia::Vec2F(150 ,150);;// = cameraCalibration.getPrincipalPoint();
-    float nearPlane = 2.0f;
-    float farPlane = 2000.0f;
-    float dx = principalPoint.data[0] - size.data[0] / 2;
-    float dy = principalPoint.data[1] - size.data[1] / 2;
+    for (int i = 0; i < state.getNumTrackableResults(); ++i) {
+        // Get the trackable
+        const Vuforia::TrackableResult* result = state.getTrackableResult(i);
+        ViewMatrix = Vuforia::Tool::convertPose2GLMatrix(result->getPose());
+    }
+   
+    Vuforia::Matrix44F inverseViewMatrix = [self Matrix44FInverse:ViewMatrix];
     
-    float x =  2.0f * focalLength.data[0] / size.data[0];
-    float y = -2.0f * focalLength.data[1] / size.data[1];
-    float a =  2.0f * dx / size.data[0];
-    float b = -2.0f * (dy + 1.0f) / size.data[1];
-    float c = (farPlane + nearPlane) / (farPlane - nearPlane);
-    float d = -nearPlane * (1.0f + c);
-    
-    
-    projectionMatrix.data[0] = x;      projectionMatrix.data[1] = 0.0f;   projectionMatrix.data[2] = 0.0f;  projectionMatrix.data[3] = 0.0f;
-    projectionMatrix.data[4] = 0.0f;   projectionMatrix.data[5] = y;      projectionMatrix.data[6] = 0.0f;  projectionMatrix.data[7] = 0.0f;
-    projectionMatrix.data[8] = a;      projectionMatrix.data[9] = b;      projectionMatrix.data[10] = c;    projectionMatrix.data[11] = 1.0f;
-    projectionMatrix.data[12] = 0.0f;  projectionMatrix.data[13] = 0.0f;  projectionMatrix.data[14] = d;    projectionMatrix.data[15] = 0.0f;
-    
-    SampleApplicationUtils::setRotationMatrix(1, 1, 0, 0,&modelViewMatrix.data[0]);
-    SampleApplicationUtils::translatePoseMatrix(0.0f, 0.0f, 100, &modelViewMatrix.data[0]);
+    SampleApplicationUtils::translatePoseMatrix(0.0f, 0.0f, 300, &modelMatrix.data[0]);
+    SampleApplicationUtils::scalePoseMatrix(1.0f, 1.0f, -1.0, &modelMatrix.data[0]);
+    SampleApplicationUtils::multiplyMatrix(&inverseViewMatrix.data[0],  &modelMatrix.data[0],&modelViewMatrix.data[0]);
+
     SampleApplicationUtils::multiplyMatrix(&projectionMatrix.data[0], &modelViewMatrix.data[0], &modelViewProjection.data[0]);
     
     
@@ -354,7 +353,7 @@ namespace {
         glBindTexture(GL_TEXTURE_2D, augmentationTexture[targetIndex].textureID);
     }
     glUniformMatrix4fv(mvpMatrixHandle, 1, GL_FALSE, (const GLfloat*)&modelViewProjection.data[0]);
-    glUniform1i(texSampler2DHandle, 0 /*GL_TEXTURE0*/);
+    glUniform1i(texSampler2DHandle, 0 );
     
     if (offTargetTrackingEnabled) {
         glDrawArrays(GL_TRIANGLES, 0, (int)buildingModel.numVertices);
@@ -369,7 +368,7 @@ namespace {
     SampleApplicationUtils::checkGlError("EAGLView renderFrameVuforia");
 
     
-    
+    */
     
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
